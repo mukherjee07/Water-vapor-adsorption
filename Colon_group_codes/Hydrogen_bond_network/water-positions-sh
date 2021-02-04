@@ -1,0 +1,63 @@
+#!/bin/bash
+
+#Author: Krishnendu Mukherjee, Chemical Engineering, University of Notre Dame
+#Advisor: Dr. Yamil Colon
+#Goal: 
+#(i) The objective of this code is to read coordinates and charges from a CIF file (i.e. crystallographic information file); use a read_cif() function and store the input in an array X, Y, and Z's and the charge in C array.
+#(ii) After the coordinates and charges are stored in respective array; divide the available cylinderical domain into cylindrical grids (we are writing this one for cylinderical one, there can be uses for sperical or even square).
+#(iii) After the griding is done, loop through each grid and calculate the electric potential or electric field at the center of the grid. Create a function potential() which accepts X,Y,Z and C to facilitate that.
+#(iv) Store the final electrical potential in a vector for ease in visualising.
+
+#mv restart* sample.data
+FILE="water"
+ZERO=0
+CSV=${FILE}.csv
+FILE=${FILE}
+if [ -f ${CSV} ]; then
+rm ${CSV}
+fi
+touch ${CSV}
+echo "X_h1,Y_h1,Z_h1,X_h2,Y_h2,Z_h2,X_o,Y_o,Z_o" >> ${CSV}
+
+#extract the cylinder length and convert that to integer
+cylinder=$(grep -m 1 'cell-length' ${FILE} | cut -d ' ' -f 5)
+cylinder=${cylinder#0}
+#echo "$cylinder"
+
+#lines variables simply represents number of individual elements in the header file 
+header=$(grep -n -m 1 'Adsorbate-atom-position' ${FILE} | cut -d ':' -f 1)
+header=${header#0}
+#echo "$header"
+#total_lines shows total lines in the files
+line_pos=$[ $header - 2 ]
+total_moles=$(awk 'FNR=='$line_pos' {print $4}' ${FILE} )
+total_moles=${total_moles#0}
+total_moles=$[ $total_moles + $total_moles + $total_moles + $total_moles ]
+#echo "$total_moles"
+#total_elements=$[total_lines - header]
+
+#Loop over all the elements in the cif file to extract the data
+for ((i=$header;i<=$[ $header + $total_moles - 1 ];i++))
+do
+row=$i
+type_a=$(awk 'FNR=='$row' {print $3}' ${FILE})
+x_cord=$(awk 'FNR=='$row' {print $4}' ${FILE} )
+y_cord=$(awk 'FNR=='$row' {print $5}' ${FILE} )
+z_cord=$(awk 'FNR=='$row' {print $6}' ${FILE} )
+z_cord=${z_cord#0}
+#assigning charge depending on the atom type
+if [ $type_a == 0 ]; then
+charge=0
+elif [ $type_a == 1 ]; then
+charge=0.52
+echo -n "$x_cord,$y_cord,$z_cord," >> ${CSV}
+elif [ $type_a == 2 ]; then
+charge=0.52
+echo -n "$x_cord,$y_cord,$z_cord," >> ${CSV}
+elif [ $type_a == 3 ]; then
+charge=-1.04
+echo "$x_cord,$y_cord,$z_cord" >> ${CSV}
+fi
+#charge=$(awk 'FNR=='$row' {print $6}' ${FILE} )
+#echo "$x_cord,$y_cord,$z_cord,$charge"
+done 

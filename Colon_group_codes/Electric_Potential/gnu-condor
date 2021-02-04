@@ -1,0 +1,11 @@
+#!/bin/bash
+universe= vanilla
+output= test.output
+error= errors.txt
+should_transfer_files=yes
+when_to_transfer_output=on_exit
+transfer_input_files=AAZXYZ.csv,2D-surface.gnuplot
+###,UFF/pseudo_atoms.def,UFF/force_field_mixing_rules.def,Hansen/N2O.def
+log= test.logfile
+executable=/scratch365/kmukherj/Charged_Cylinders/10.09.2020/Potential_plots/9.24Ansgtorm/AA/TYPE/gnu-script
+queue

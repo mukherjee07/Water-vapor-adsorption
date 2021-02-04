@@ -1,0 +1,59 @@
+#!/bin/bash
+
+FAIL=0
+C=0
+ZERO=0
+Pressure=(20.78 41.57 103.92 207.85 415.7 831.4 1247.1 1662.8 2078.5 2494.2 2909.9 3325.6 3741.3 4157)
+# Pressure=(4157)
+Structure=(Alt_radial Alt_along_radial)
+#Structure=(Outer)
+Name=(AR AAR)
+#Name=(Outer)
+Size=(14 16 18 20 22 24 26)
+# Outer loop for creating 6 structures
+for ((j=0;j<=1;j++))
+do
+# Creating structure principal folder, 4 of them
+#mkdir ${Structure[$j]}
+cd ${Structure[$j]} 
+for ((s=0;s<=6;s++))
+do
+# Creating multiple sizes for each structure/config type
+#mkdir ${Size[$s]}
+cd ${Size[$s]}
+for ((c=0;c<=13;c++))
+do
+#mkdir ${Pressure[$c]}
+cd ${Pressure[$c]}
+#qsub raspa-sh
+if [ -d Output ]; then
+cd Output/System*/
+#FLAG=$(grep -q "Simulation finished" output*.data && echo $?)
+if [ -f output*.data ]; then
+FLAG=$(grep -q "Simulation finished" output*.data && echo $?)
+#FLAG=0
+else
+FLAG=1
+fi
+cd ../../
+if [[ $FLAG == $ZERO ]]; then
+C=$[$C + 1 ]
+else
+FAIL=$[ $FAIL + 1 ]
+pwd
+fi
+else
+FAIL=$[ $FAIL + 1 ]
+pwd
+fi
+cd ../
+done
+# Exiting the pressure loop
+cd ../
+done
+# Exiting the sizes loop
+cd ../
+done
+# Exiting all the structures loop
+echo "Number of completed/running jobs are $C"
+echo "Number of incomplete or unstarted jobs are $FAIL"

@@ -1,0 +1,37 @@
+set term pngcairo size 3500,2900 font "Hevlectica,20" fontscale 3.0 enhanced
+#size 9000, 5000 
+set size 0.85,1.0
+set output 'Alt_along.png'
+
+set datafile separator comma
+set encoding iso_8859_1
+#unset surface
+filename="Alt_along.csv"
+#unset xtics
+set xlabel font "Hevlectica, 20"
+set ylabel font "Hevlectica, 20"
+#set zlabel font "Hevlectica, 20"
+set title font "Hevlectica, 25"
+set title 'Water vapor uptake capacity of Alt along config ICC at 300K'
+#set title offset 4,0
+set xlabel 'Relative Humidity (Tip4p Water model)'
+set ylabel 'Water vapor uptake (in molecules unit cell)'
+#set xlabel offset 0,0
+#set ylabel offset -1,0
+#set xrange [10.9:19.9]
+#set yrange [10.9:19.9]
+set xtics border
+set ytics border
+set origin 0,0
+#Shadecolor = "#80E0A080"
+#set xyplane at 0
+#set zlabel 'Electric Potential '
+#set colorbox
+#plot filename using 1:($10+$11):($10-$11) with filledcurve fc rgb Shadecolor title "Shaded error region",	'' using 1:2 smooth mcspline lw 2 title "Water uptake in molecules/unit cell"
+
+#and image
+#plot filename u 1:8 t "water vapor uptake (molecules/unit cell)" w yerr, 9 t "Error bar" w linespoints
+set pointsize 15
+set style line 1 lt 2 lw 20 pt 4 ps 0.5
+set linetype 6 lc rgb "dark-red" lw 20 pt 11
+plot filename u 1:8 t "water vapor uptake capacity (molecules/unit cell)" w linespoints

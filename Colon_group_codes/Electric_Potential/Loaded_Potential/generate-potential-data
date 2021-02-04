@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#$ -pe smp 1
+#$ -q long
+#$ -N Inner
+
+module load python
+python frac_potential.py

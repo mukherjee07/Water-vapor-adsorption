@@ -1,0 +1,32 @@
+#!/bin/bash
+
+## This script would submit jobs for creating GNUplot images 
+
+#Creating array for corresponding Z axis fraction and its position 
+TYPE=(Alt_along)
+TYPES=(AA)
+Z=(0 1 2 3 4 5)
+Z_name=(0.00 1.54 3.08 4.62 6.16 7.70)
+
+for ((i=0;i<=5;i++))
+do
+# creating a folder named off of Z-axis position
+if [ -d ${Z_name[$i]}]; then
+rm -r ${Z_name[$i]} 
+fi
+mkdir ${Z_name[$i]}
+cd ${Z_name[$i]}
+#copying all the relevant files for creating the surface plot
+cp ../2D-surface.gnuplot ../${TYPES}Z${Z[$i]}.csv ../gnu-condor ../gnu-script .
+#changing the address in the condor submission scripts
+sed -i 's/TYPE/'${Z_name[$i]}'/' gnu-condor
+sed -i 's/XYZ/'${Z[$i]}'/' gnu-condor
+sed -i 's/TYPE/'${Z_name[$i]}'/' gnu-script
+#changing the z axis fraction and position in the gnuplot script
+sed -i 's/XYZ/'${Z[$i]}'/' 2D-surface.gnuplot
+sed -i 's/POS/'${Z_name[$i]}'/' 2D-surface.gnuplot
+#submitting the final job
+condor_submit gnu-condor
+#coming out to the main directory
+cd ..
+done

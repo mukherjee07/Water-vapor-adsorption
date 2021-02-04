@@ -1,0 +1,29 @@
+#!/bin/bash
+
+module load gnuplot
+
+A=(AR AAR AA NC Outer Inner)
+NAME=(Alt_radial Alt_along_radial Alt_along No_charge Outer Inner)
+Z=(0 1 5 10 20)
+for ((i=1;i<=5;i++))
+do
+mkdir ${A[$i]}
+cd ${A[$i]}
+cp ../potential-sh ../IC_25_${A[$i]}.cif ../new_potential.py ../2D-surface.gnuplot .
+# updating the potential and new_potential fields
+sed -i 's/XXX/'${A[$i]}'/' potential-sh
+sed -i 's/XXX/'${A[$i]}'/' new_potential.py
+python new_potential.py
+for ((k=0;k<=4;k++))
+do
+#updating the gnuplot fields
+sed -i 's/YYY/'${NAME[$i]}'/' 2D-surface.gnuplot
+sed -i 's/XXX/'${A[$i]}'/' 2D-surface.gnuplot
+sed -i 's/CCC/'${Z[$k]}'/' 2D-surface.gnuplot
+gnuplot -p 2D-surface.gnuplot
+sed -i 's/Z'${Z[$k]}'.csv/ZCCC.csv/' 2D-surface.gnuplot
+rm 2D-surface.gnuplot
+cp ../2D-surface.gnuplot .
+done
+cd ..
+done

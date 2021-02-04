@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#$ -pe smp 1
+#$ -q long
+#$ -N TYPE
+
+module load gnuplot
+gnuplot -p 2D-surface.gnuplot
+mv *.png ../

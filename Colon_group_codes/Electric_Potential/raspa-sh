@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#$ -pe smp 1
+#$ -q long
+#$ -N JOBNAME
+
+module load python
+bash job-sh

@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#Author: Krishnendu Mukherjee, Chemical Engineering, University of Notre Dame
+#Advisor: Dr. Yamil Colon
+#Goal: 
+#(i) The objective of this code is to read coordinates and charges from a CIF file (i.e. crystallographic information file); use a read_cif() function and store the input in an array X, Y, and Z's and the charge in C array.
+#(ii) After the coordinates and charges are stored in respective array; divide the available cylinderical domain into cylindrical grids (we are writing this one for cylinderical one, there can be uses for sperical or even square).
+#(iii) After the griding is done, loop through each grid and calculate the electric potential or electric field at the center of the grid. Create a function potential() which accepts X,Y,Z and C to facilitate that.
+#(iv) Store the final electrical potential in a vector for ease in visualising.
+
+FILE="IC_25_XXX"
+CSV=${FILE}.csv
+FILE=${FILE}.cif
+if [ -f ${CSV} ]; then
+rm ${CSV}
+fi
+touch ${CSV}
+
+#lines variables simply represents number of individual elements in the header file 
+header=$(grep -n '_atom_site_charge' ${FILE} | cut -d ':' -f 1)
+header=${header#0}
+#total_lines shows total lines in the files
+total_lines=$(wc -l ${FILE} | cut -d ' ' -f 1)
+total_lines=${total_lines#0}
+total_elements=$[total_lines - header]
+
+#Loop over all the elements in the cif file to extract the data
+for ((i=$header;i<=$[ $total_lines - 1];i++))
+do
+row=$[ $i + 1 ]
+x_cord=$(awk 'FNR=='$row' {print $3}' ${FILE} )
+y_cord=$(awk 'FNR=='$row' {print $4}' ${FILE} )
+z_cord=$(awk 'FNR=='$row' {print $5}' ${FILE} )
+charge=$(awk 'FNR=='$row' {print $6}' ${FILE} )
+echo "$x_cord,$y_cord,$z_cord,$charge" >> ${CSV}
+done 

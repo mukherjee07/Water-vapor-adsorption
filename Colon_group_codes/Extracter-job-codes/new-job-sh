@@ -1,0 +1,42 @@
+#!/bin/bash
+
+Pressure=(20.78 41.57 103.92 207.85 415.7 831.4 1247.1 1662.8 2078.5 2494.2 2909.9 3325.6 3741.3 4157)
+# Pressure=(4157)
+Structure=(Alt_along Alt_radial Alt_along_radial inner_positive Outer_positive)
+#Structure=(Outer)
+Name=(AA AR AAR Inner Outer)
+#Name=(Outer)
+Size=(14 16 18 20 22 24 26)
+# Outer loop for creating 6 structures
+for ((j=0;j<=4;j++))
+do
+# Creating structure principal folder, 4 of them
+#mkdir ${Structure[$j]}
+cd ${Structure[$j]} 
+for ((s=0;s<=6;s++))
+do
+# Creating multiple sizes for each structure/config type
+mkdir ${Size[$s]}
+cd ${Size[$s]}
+cp ../../Tip4p.def ../../sim2.input ../IC_${Size[$s]}_${Name[$j]}.cif .
+sed -i 's/STRUCNAME/IC_'${Size[$s]}'_'${Name[$j]}'/' sim2.input
+#sed -i 's/BLOCK/Self_cylinder_'${Size[$s]}'/' sim2.input
+# Creating Pressure isotherm at T = 298K for each structure/config/size permutation
+for ((c=0;c<=13;c++))
+do
+mkdir ${Pressure[$c]}
+cd ${Pressure[$c]}
+# change presure and jobname and then submit jobs in CRC 
+cp ../Tip4p.def ../sim2.input ../IC_${Size[$s]}_${Name[$j]}.cif .
+sed -i 's/XXX/'${Pressure[$c]}'/' sim2.input
+#sed -i 's/JOBNAME/UFF'${Name[$j]}'P'$c'/' raspa-sh
+#qsub raspa-sh
+cd ../
+done
+# Exiting the pressure loop
+cd ../
+done
+# Exiting the sizes loop
+cd ../
+done
+# Exiting all the structures loop

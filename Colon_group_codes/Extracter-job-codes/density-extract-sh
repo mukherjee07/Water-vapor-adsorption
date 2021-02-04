@@ -1,0 +1,50 @@
+#!/bin/bash
+
+#creating the water uptake and error csv file
+#Up_file=(alt_ang alt_z pos neg Self_alt_ang Self_alt_z Self_pos Self_neg)
+Up_file=(Alt_along inner_positive Outer_positive)
+# Declaring Pressure & Diameter and Filename
+Pressure=(20.78 41.57 103.92 207.85 415.7 831.4 1247.1 1662.8 2078.5 2494.2 2909.9 3325.6 3741.3 4157)
+#Pressure=(4157)
+Diameter=(14 16 18 20 22 24 26)
+for ((k=0;k<=2;k++))
+do
+if [ -f D${Up_file[$k]}.csv ]; then
+rm D${Up_file[$k]}.csv
+fi
+touch D${Up_file[$k]}.csv 
+#creating columns in the first row
+echo "pressure,4ang,5ang,6ang,7ang,8ang,9ang,10ang" >> D${Up_file[$k]}.csv
+#Filename=(14 16 18 20 22 24 26)
+cd ${Up_file[$k]}
+#Navigating different pressure for a single cylinder diameter
+for ((c=0;c<=13;c++))
+do
+#Navigating for different cylinder diameters for a single pressure point
+# printing out pressure in the same line
+echo -n "${Pressure[$c]}" >> ../D${Up_file[$k]}.csv
+for ((j=0;j<=6;j++))
+do
+cd ${Diameter[$j]} 
+cd ${Pressure[$c]}
+# change presure and jobname and then submit jobs in CRC 
+cd Output/System_0/
+#creating sample file to print output to extract relevant data
+rm -f sample.txt
+touch sample.txt
+grep 'density:' *.data > sample.txt
+NLINE=$(wc -l < sample.txt)
+echo $NLINE
+density=$(awk 'FNR=='${NLINE}' { print $13 }' sample.txt)
+#Error=$(awk 'FNR==1 { print $8 }' sample.txt)
+# After extracting the adsorption data and error value, printing it out 
+echo -n ",$density" >> ../../../../../D${Up_file[$k]}.csv
+#echo "$density"
+rm sample.txt
+# removing the sample file
+cd ../../../../
+done
+echo " " >> ../D${Up_file[$k]}.csv
+done
+cd ..
+done
