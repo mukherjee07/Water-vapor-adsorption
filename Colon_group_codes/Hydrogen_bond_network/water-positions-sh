@@ -61,3 +61,4 @@ fi
 #charge=$(awk 'FNR=='$row' {print $6}' ${FILE} )
 #echo "$x_cord,$y_cord,$z_cord,$charge"
 done 
+#
